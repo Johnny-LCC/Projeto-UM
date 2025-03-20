@@ -246,8 +246,8 @@ class JogoPvP extends Phaser.Scene {
             quad.setScale(1);
             quad.setInteractive({useHandCursor: true});
             this.add.text(quad.x, quad.y, numerosColuna[i], {
-                fontSize: '32px',
-                fill: '#000',
+                fontSize: '64px',
+                color: '#000',
                 fontFamily: 'Arial'
             }).setOrigin(0.5);
         }
@@ -260,8 +260,8 @@ class JogoPvP extends Phaser.Scene {
                 quad.setInteractive({useHandCursor: true});
                 if (matriz[i][j] !== null) {
                     this.add.text(quad.x, quad.y, matriz[i][j], {
-                        fontSize: '32px',
-                        fill: '#000',
+                        fontSize: '64px',
+                        color: '#000',
                         fontFamily: 'Arial'
                     }).setOrigin(0.5);
                 }
@@ -352,6 +352,14 @@ class JogoPvE extends Phaser.Scene {
         this.ampTempo = this.add.sprite(0.135 * width, 0.4 * height, 'ampTempo');
         this.ampTempo.setScale(1);
 
+        this.tempoRestante = 10;
+        this.contadorAtivo = false;
+        this.textoTempo = this.add.text(this.ampTempo.x, this.ampTempo.y, this.tempoRestante, {
+            fontSize: '64px',
+            color: '#ffffff',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
+
         let numerosColuna = this.gerarNumerosUnicos(5, 1, 9);
 
         // Criar lista de produtos únicos entre dois números distintos da coluna
@@ -391,10 +399,16 @@ class JogoPvE extends Phaser.Scene {
             quad.setScale(1);
             quad.setInteractive({useHandCursor: true});
             this.add.text(quad.x, quad.y, numerosColuna[i], {
-                fontSize: '32px',
-                fill: '#000',
+                fontSize: '64px',
+                color: '#000',
                 fontFamily: 'Arial'
             }).setOrigin(0.5);
+
+            quad.on('pointerdown', () => {
+                if (!this.contadorAtivo) {
+                    this.iniciarContador();
+                }
+            });
         }
         
         // Exibir matriz com produtos posicionados aleatoriamente
@@ -405,8 +419,8 @@ class JogoPvE extends Phaser.Scene {
                 quad.setInteractive({useHandCursor: true});
                 if (matriz[i][j] !== null) {
                     this.add.text(quad.x, quad.y, matriz[i][j], {
-                        fontSize: '32px',
-                        fill: '#000',
+                        fontSize: '64px',
+                        color: '#000',
                         fontFamily: 'Arial'
                     }).setOrigin(0.5);
                 }
@@ -436,6 +450,25 @@ class JogoPvE extends Phaser.Scene {
             }
         }, this);
     }
+    iniciarContador() {
+        this.contadorAtivo = true;
+        this.temporizador = this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                this.tempoRestante--;
+                this.textoTempo.setText(this.tempoRestante);
+                if (this.tempoRestante <= 0) {
+                    this.temporizador.remove();
+                    this.contadorAtivo = false;
+                    // Aqui pode adicionar uma ação ao terminar o tempo
+                    console.log('Tempo esgotado!');
+                }
+            },
+            callbackScope: this,
+            loop: true
+        });
+    }
+    
     gerarNumerosUnicos(qtd, min, max) {
         let numeros = new Set();
         while (numeros.size < qtd) {
